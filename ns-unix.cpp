@@ -12,6 +12,8 @@
 
 #include "glugin.h"
 
+#define pdof(x) ((pluginData*)(x->pdata))
+
 static NPNetscapeFuncs gNetscapeFuncs;	/* Netscape Function table */
 
 void Log(const char* c,...)
@@ -145,7 +147,7 @@ NPError NPP_New(
 
 	Log("allocated");
 	
-	pd=(pluginData*)(instance->pdata);
+	pd=pdof(instance);
 	pd->exit_request=pd->exit_ack=pd->has_window=
 		pd->r=pd->g=pd->b=0;
 	pd->br=pd->bg=pd->bb=255;
@@ -184,7 +186,7 @@ NPError NPP_SetWindow(
 	NPP instance,
 	NPWindow *w)
 {
-	pluginData*pd=(pluginData*)(instance->pdata);
+	pluginData*pd=pdof(instance);
 	pid_t child;
 	int pw[2],pr[2];
 
@@ -255,11 +257,13 @@ NPError NPP_Destroy(
 	NPSavedData** saved)
 {
 	pluginData* pd;
-	pd=(pluginData*)(instance->pdata);
+	pd=pdof(instance);
 
 	Log("killing child...");
 
 	kill(pd->child,SIGUSR1);
+	fclose(pd->pw);
+	fclose(pd->pr);
 	usleep(10000);
 
 	//TODO
@@ -284,6 +288,7 @@ NPError NPP_NewStream(
 	uint16*    stype)
 {
 	Log("new stream");
+	host_newstream(pdof(instance),stream);
 	return NPERR_NO_ERROR;
 }
 
@@ -293,6 +298,7 @@ NPError NPP_DestroyStream(
 	NPReason reason)
 {
 	Log("destroy stream");
+	host_destroystream(pdof(instance),stream);
 	return NPERR_NO_ERROR;
 }
 
@@ -303,6 +309,7 @@ int32 NPP_Write(NPP instance,
                 void* buf)
 {
 	Log("write %d",len);
+	host_write(pdof(instance),stream,offset,len,buf);
 	return len;
 }
 
@@ -369,8 +376,44 @@ void plugin_process_handler(pluginData*pd, Window win, Visual*vis)
 	glugin_proc(pd);
 
 	Log("plugin killed, cleaning up.");
+
+	fclose(pd->pw);
+	fclose(pd->pr);
 	
 	glXMakeCurrent(dpy, None, 0);
 	glXDestroyContext(dpy,ctx);
 }
+
+template <class T> void writedata(FILE*f, T x)
+{
+	fwrite(&x,sizeof(T),1,f);
+}
+
+void host_newstream(pluginData* pd, NPStream* s){
+	writedata(pd->pw,(int)gln_new_stream);
+	writedata(pd->pw,s);
+	fflush(pd->pw);
+}
+
+void host_destroystream(pluginData*pd, NPStream*s){
+	writedata(pd->pw,(int)gln_destroy_stream);
+	writedata(pd->pw,s);
+	fflush(pd->pw);
+}
+
+void host_write(pluginData*pd,NPStream*s,int32 off, int32 siz, void*data){
+	writedata(pd->pw,(int)gln_stream_data);
+	writedata(pd->pw,s);
+	writedata(pd->pw,off);
+	writedata(pd->pw,siz);
+	fwrite(data,siz,1,pd->pw);
+	fflush(pd->pw);
+}
+
+void host_read_guest_requests(pluginData*){
+
+	Log("Reading guest requests");
+
+}
+
 

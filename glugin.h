@@ -33,3 +33,8 @@ void glugin_proc(pluginData* pd);
 #define gln_request_get 4 //url size, url
 #define gln_request_post 5 //url size, data size, url, data
 
+void host_newstream(pluginData*, NPStream*);
+void host_destroystream(pluginData*, NPStream*);
+void host_write(pluginData*,NPStream*,int32, int32, void*);
+void host_read_guest_requests(pluginData*);
+
