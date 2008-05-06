@@ -178,7 +178,7 @@ void set_nonblock(int fd)
 	fcntl(fd, F_SETFL, flags);
 }
 
-void plugin_process_handler(pluginData*, Window, Visual*, FILE*, FILE*);
+void plugin_process_handler(pluginData*, Window, Visual*);
 
 NPError NPP_SetWindow(
 	NPP instance,
@@ -214,12 +214,14 @@ NPError NPP_SetWindow(
 			close(pw[1]);
 			close(pr[0]);
 
+			pd->pw=fdopen(pr[1],"w");
+			pd->pr=fdopen(pw[1],"w");
+
 			//TODO check if setsid is needed here
-			//
+
 			plugin_process_handler(pd, pd->win=(Window)(w->window),
 				((NPSetWindowCallbackStruct*)
-					(w->ws_info))->visual,
-				fdopen(pw[0],"r"),fdopen(pr[1],"w"));
+					(w->ws_info))->visual);
 			_exit(0);
 
 		} else {
@@ -338,7 +340,7 @@ void swapbuffers(pluginData*pd)
 	glXSwapBuffers(pd->dpy,pd->win);
 }
 
-void plugin_process_handler(pluginData*pd, Window win, Visual*vis, FILE*in, FILE*out)
+void plugin_process_handler(pluginData*pd, Window win, Visual*vis)
 {
 	int i;
 	Display*dpy=XOpenDisplay(0);

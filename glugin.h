@@ -25,3 +25,11 @@ typedef struct pluginData_t {
 extern "C"
 void glugin_proc(pluginData* pd);
 
+
+//op number, unsigned int
+#define gln_new_stream 1 //stream *
+#define gln_stream_data 2 //stream *, data offset, data size, data
+#define gln_destroy_stream 3 //stream *
+#define gln_request_get 4 //url size, url
+#define gln_request_post 5 //url size, data size, url, data
+
