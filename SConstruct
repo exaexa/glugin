@@ -1,9 +1,9 @@
 
 env=Environment()
 
-env['CCFLAGS']="-shared -Wall"
-env['CXXFLAGS']="-shared -Wall"
-env['CPPPATH']=['/usr/lib/mozilla-firefox/include/java/','/usr/lib/mozilla-firefox/include/plugin/','/usr/include/nspr/']
+env.ParseConfig('pkg-config --cflags --libs mozilla-plugin')
+env['CCFLAGS']="-Wall"
+env['CXXFLAGS']="-Wall"
 
 env.SharedLibrary('glugin',['ns-unix.cpp','core.cpp','common.cpp'],LIBS=['GLU'])
 
