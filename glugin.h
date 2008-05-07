@@ -20,6 +20,11 @@ typedef struct pluginData_t {
 	int exit_request,exit_ack;
 
 	int r,g,b,br,bg,bb;
+
+	//guest handlers
+	void(*handle_newstream)(struct pluginData_t*,NPStream*);
+	void(*handle_destroystream)(struct pluginData_t*, NPStream*);
+	void(*handle_write)(struct pluginData_t*,NPStream*,int32,int32,void*);
 } pluginData;
 
 extern "C"
@@ -37,4 +42,6 @@ void host_newstream(pluginData*, NPStream*);
 void host_destroystream(pluginData*, NPStream*);
 void host_write(pluginData*,NPStream*,int32, int32, void*);
 void host_read_guest_requests(pluginData*);
+
+void guest_read_host_requests(pluginData*);
 
