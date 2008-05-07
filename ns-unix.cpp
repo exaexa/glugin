@@ -204,7 +204,7 @@ NPError NPP_SetWindow(
 			close(pr[0]);
 
 			pd->pw=fdopen(pr[1],"w");
-			pd->pr=fdopen(pw[1],"w");
+			pd->pr=fdopen(pw[0],"r");
 
 			//TODO check if setsid is needed here
 
