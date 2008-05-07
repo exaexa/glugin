@@ -4,6 +4,10 @@
 #include "npapi.h"
 #include "npupp.h"
 
+void Log(const char*,...);
+
+#define pdof(x) ((pluginData*)(x->pdata))
+
 typedef struct pluginData_t {
 	//UNIX part
 	Window win;

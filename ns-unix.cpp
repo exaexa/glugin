@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
-#include <stdarg.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/types.h>
@@ -15,18 +14,6 @@
 #define pdof(x) ((pluginData*)(x->pdata))
 
 static NPNetscapeFuncs gNetscapeFuncs;	/* Netscape Function table */
-
-void Log(const char* c,...)
-{
-	va_list al;
-	FILE*f=fopen(".glugin.log","a");
-	if(!f)return;
-	va_start(al,c);
-	vfprintf(f,c,al);
-	va_end(al);
-	fputc('\n',f);
-	fclose(f);
-};
 
 NPError NP_Initialize(NPNetscapeFuncs * nsTable, NPPluginFuncs * pluginFuncs)
 {
