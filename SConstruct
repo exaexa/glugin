@@ -1,7 +1,7 @@
 
 env=Environment()
 
-env.ParseConfig('pkg-config --cflags --libs mozilla-plugin')
+env.ParseConfig("bash -c 'pkg-config --cflags --libs mozilla-plugin || pkg-config --cflags --libs iceape-plugin'")
 env['CCFLAGS']="-Wall"
 env['CXXFLAGS']="-Wall"
 
