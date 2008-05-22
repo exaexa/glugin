@@ -23,12 +23,26 @@ NPError NP_Initialize(NPNetscapeFuncs * nsTable, NPPluginFuncs * pluginFuncs)
 	 * and proved to be extremely useful. */
 	if ((nsTable == NULL) || (pluginFuncs == NULL))
 		return NPERR_INVALID_FUNCTABLE_ERROR;
+	Log("table ok");
+
 	if ((nsTable->version >> 8) > NP_VERSION_MAJOR)
 		return NPERR_INCOMPATIBLE_VERSION_ERROR;
+	Log("table version ok");
+
+	/*check for table size removed, probable alignment or such problems.
+	 *
+
 	if (nsTable->size < sizeof(NPNetscapeFuncs))
 		return NPERR_INVALID_FUNCTABLE_ERROR;
+	Log("table size ok");
+
+	 */
+
 	if (pluginFuncs->size < sizeof(NPPluginFuncs))
 		return NPERR_INVALID_FUNCTABLE_ERROR;
+	Log("ok pluginfuncs size check");
+
+	Log("ok initing");
 
 	gNetscapeFuncs.version = nsTable->version;
 	gNetscapeFuncs.size = nsTable->size;
