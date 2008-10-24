@@ -3,6 +3,7 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <unistd.h>
+#include <math.h>
 
 void guest_read_host_requests(pluginData* pd)
 {
@@ -81,26 +82,28 @@ void glugin_proc(pluginData*pd)
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 		glLoadIdentity();
 		glTranslatef(0,0,-2);
-		glRotatef(rot,0,0,1);
-		{float ri,rj,gi,gj,bi,bj;
+		glRotatef(rot,0,0,-1);
+		{float ri,rj,gi,gj,bi,bj,tmp;
 		ri=r;
 		gi=g;
 		bi=b;
-		rj=(br-r)/10;
-		gj=(bg-g)/10;
-		bj=(bb-b)/10;
-		for(int i=0;i<10;++i) {
-			glBegin(GL_TRIANGLES);
-				glColor3f(ri,gi,bi);
-				glVertex2f(0,0.3);
-				glVertex2f(0.1,1);
-				glVertex2f(-0.1,1);
-			glEnd();
+		rj=(br-r)/100;
+		gj=(bg-g)/100;
+		bj=(bb-b)/100;
+		glBegin(GL_TRIANGLE_FAN);
+		glColor3f(br,bg,bb);
+		glVertex2f(0,0);
+		glVertex2f(0,1);
+		for(int i=2;i<102;++i) {
+			glColor3f(ri,gi,bi);
+			tmp=M_PI*(3*i)/180.0;
+			glVertex2f(-sinf(tmp),cosf(tmp));
 			ri+=rj;
 			gi+=gj;
 			bi+=bj;
-			glRotatef(-20,0,0,1);
-		}}
+		}
+		glEnd();
+		}
 		pd->swapbuffers(pd);
 
 		rot+=0.5;

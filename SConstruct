@@ -5,5 +5,5 @@ env.ParseConfig("bash -c 'pkg-config --cflags --libs mozilla-plugin || pkg-confi
 env['CCFLAGS']="-Wall"
 env['CXXFLAGS']="-Wall"
 
-env.SharedLibrary('glugin',['ns-unix.cpp','core.cpp','common.cpp'],LIBS=['GLU'])
+env.SharedLibrary('glugin',['ns-unix.cpp','core.cpp','common.cpp'],LIBS=['GL','GLU','m'])
 
